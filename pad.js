@@ -1,4 +1,3 @@
-var fs = require('fs');
 // function Read(elem, type="val"){
 //     fs.readFile("Save.txt", function(err, data){
 //         if(err){
@@ -23,7 +22,7 @@ var fs = require('fs');
 // }
 
 var main_data = null;
-// main_data = '[{"edit_time": "2020.12.25 23:00","describe": "","content": "你好 MyPad!"}, {"edit_time": "2020.12.25 23:00","describe": "","content": "Hello MyPad!"}, {"edit_time": "2020.12.25 23:00","describe": "","content": "Hello MyPad!"}, {"edit_time": "2020.12.25 23:00","describe": "","content": "Hello MyPad!"}]';
+var fs = require('fs');
 function read(task){
     // 本地读取模块
     fs.readFile("Save.txt", function(err, data){
@@ -35,6 +34,7 @@ function read(task){
         }
     });
     // 网络读取模块
+    // main_data = '[{"edit_time": "2020.12.25 23:00","describe": "","content": "你好 MyPad!"}, {"edit_time": "2020.12.25 23:00","describe": "","content": "Hello MyPad!"}, {"edit_time": "2020.12.25 23:00","describe": "","content": "Hello MyPad!"}, {"edit_time": "2020.12.25 23:00","describe": "","content": "Hello MyPad!"}]';
     // main_data = JSON.parse(main_data); eval(task);
 }
 function write(content){
@@ -81,13 +81,11 @@ class LIST_PAD{
         this.father = father;
         
         // 基本结构定义
-        this.box = $('<div class="pad_box"></div>');
+        this.box = $('<div class="pad_box pad_box_style"></div>');
         this.des = $('<div class="pad_des"></div>');
         this.tim = $('<div class="pad_time"></div>');
 
-        this.box.append(this.des, this.tim);
-        this.father.append(this.box);
-        this.load();
+        this.box.append(this.des, this.tim); this.load();
 
         var th = this;
         this.box.click(function(){
@@ -109,11 +107,16 @@ class LIST{
     constructor(base){
         this.pads = [];
         this.base = base;
+        this.add_box = $('<div class="pad_box pad_box_style pad_add">点击新建笔记</div>');
 
         for(var i in main_data){
             var info = main_data[i];
-            this.pads.push(new LIST_PAD(base, info['edit_time'], info['describe'], info['content']));
-        }    
+            var pad = new LIST_PAD(base, info['edit_time'], info['describe'], info['content']);
+            this.base.append(pad.box); this.pads.push(pad);
+        } this.base.append(this.add_box);
+        
+        var th = this;
+        this.add_box.click(function(){th.add();});
     }
     save(){
         var s = [];
@@ -126,20 +129,29 @@ class LIST{
             });
         } write(JSON.stringify(s));
     }
+    add(){
+        var pad = new LIST_PAD(this.base, get_now_time(), '', '新建笔记');
+        this.add_box.before(pad.box); this.pads.push(pad);
+        pad.box.click();
+    }
 }
 class EDITOR{
     constructor(base){
         this.on_edit = false;
         this.on_elem = null;
         this.base = base;
+        this.type = 0;
 
         // 创建工具栏
-        this.tools_box = $('<div class="editor_tools"></div>');
+        this.tools_box = $('<div class="editor_tools pad_box_style"></div>');
+        this.type_btn = $('<div class="pad_type">light</div>');
+        this.tools_box.append(this.type_btn);
+
         // 创建文本编辑区域
         var edit_h = $('<div class="editor_h"></div>').text('笔记正文');
         var des_h = $('<div class="editor_h"></div>').text('笔记描述');
-        this.edit_box = $('<textarea class="editor_area"></textarea>');
-        this.des_box = $('<textarea class="editor_des"></textarea>');
+        this.edit_box = $('<textarea class="editor_area pad_box_style"></textarea>');
+        this.des_box = $('<textarea class="editor_des pad_box_style"></textarea>');
         // 创建按钮区域
         this.btn_box = $('<div class="editor_btn"></div>');
         this.save_btn = $('<div class="editor_save"></div>').text("保存");
@@ -147,6 +159,16 @@ class EDITOR{
 
         this.btn_box.append(this.save_btn, this.cancle_btn);
         this.base.append(this.tools_box, edit_h, this.edit_box, des_h, this.des_box, this.btn_box);
+        
+        var th = this;
+        this.type_btn.click(function(){
+            console.log("OPEN");
+            $('.pad').toggleClass("dark");
+            th.type = !th.type;
+            if(th.type == 1){
+                th.type_btn.text("dark");
+            }else th.type_btn.text("light");
+        });
     }
     save(elem){
         elem.content = this.edit_box.val();
@@ -155,7 +177,6 @@ class EDITOR{
         elem.load(); list.save();
     }
     cancle(elem){
-        console.log("Cancle!");
         this.edit_box.val(elem.content);
         this.des_box.val(elem.describe);
         
