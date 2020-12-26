@@ -1,4 +1,14 @@
+.pad{
+    position: absolute;
+    top: 0; bottom: 20vh;
+    left: 0; right: 0;
+
+    display: flex;
+    flex-flow: row nowrap;
+}
+/* 左侧列表样式 */
 .pad_list{
+    margin: 0 10px 0 0;
     display: flex;
     flex-flow: column nowrap;
 }
@@ -8,22 +18,29 @@
     margin: 5px 5px 5px 5px;
     
     border-radius: 3px;
-    background-color: #333;
+    background-color: rgb(245, 245, 245);
+    box-shadow: rgba(51, 51, 51, 0.2) 1px 1.5px 1px;
 
     display: flex;
     flex-flow: column nowrap;
 }
+.dark .pad_box{
+    background-color: rgb(51, 51, 51);
+    box-shadow: rgba(7, 7, 7, 0.2) 1px 1.5px 1px;
+}
+
 .pad_des{
     margin: 3px 0 3px 5px;
 
-    color: #d3d3d3;
+    color:rgb(10, 10, 10);
     transition-duration: 0.2s;
 }
+.dark .pad_des{color:rgb(230, 230, 230);}
 .pad_time{
     height: 20px;
     margin: 0 0 2px 5px;
 
-    color: #808080;
+    color: rgb(90, 90, 90);
 
     display: flex;
     flex-flow: column nowrap;
@@ -31,4 +48,100 @@
 
     cursor: default;
 }
-.pad_box:hover .pad_des{color: #ffffff;}
+.dark .pad_time{color: rgb(128, 128, 128);}
+
+.pad_box:hover .pad_des:before{
+
+}
+.dark .pad_box:hover .pad_des:before{
+
+}
+
+/* 右侧编辑区样式 */
+.pad_editor{
+    position: relative;
+    margin: 0 10px 0 0;
+
+    flex-grow: 1;
+    display: flex;
+    flex-flow: column nowrap;
+}
+.pad_editor:after{
+    position: absolute;
+    left: 0; right: 0;
+    top: 0; bottom: 0;
+
+    content: "请从左侧选择笔记以编辑";
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    text-align: center;
+}
+.pad_editor.active:after{display: none;}
+
+.editor_tools{
+    margin: 5px 0 5px 0;
+    min-height: 35px;
+
+    background-color: rgb(245, 245, 245);
+    box-shadow: rgba(51, 51, 51, 0.2) 1px 1.5px 1px;
+}
+.editor_area{
+    flex-grow: 1;
+    resize: none;
+    border: none;
+
+    font-size: 16px;
+    background-color: rgb(245, 245, 245);
+    box-shadow: rgba(51, 51, 51, 0.2) 1px 1.5px 1px;
+}
+.editor_des{
+    height: 40px;
+    resize: none;
+    border: none;
+    margin: 5px 0 5px 0;
+
+    font-size: 16px;
+    background-color: rgb(245, 245, 245);
+    box-shadow: rgba(51, 51, 51, 0.2) 1px 1.5px 1px;
+}
+.editor_h{
+    margin: 0 0 0 5px;
+    height: 25px;
+    font-size: 20px;
+    font-weight: bold;
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+}
+.editor_btn{
+    height: 40px;
+    display: flex;
+    flex-flow: row-reverse nowrap;
+}
+.editor_btn div{
+    width: 90px;
+    margin: 0 5px 0 25px;
+
+    border-radius: 5px;
+    cursor: pointer;
+}
+.editor_save{
+    color:rgb(245, 245, 245);
+    background-color: rgb(14, 144, 210);
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    text-align: center;
+}
+.editor_cancle{
+    color:rgb(245, 245, 245);
+    background-color: rgb(148, 148, 148);
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    text-align: center;
+}
