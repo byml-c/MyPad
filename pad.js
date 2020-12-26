@@ -1,4 +1,4 @@
-// var fs = require('fs');
+var fs = require('fs');
 // function Read(elem, type="val"){
 //     fs.readFile("Save.txt", function(err, data){
 //         if(err){
@@ -23,27 +23,27 @@
 // }
 
 var main_data = null;
-main_data = '[{"edit_time": "2020.12.25 23:00","describe": "","content": "你好 MyPad!"}, {"edit_time": "2020.12.25 23:00","describe": "","content": "Hello MyPad!"}, {"edit_time": "2020.12.25 23:00","describe": "","content": "Hello MyPad!"}, {"edit_time": "2020.12.25 23:00","describe": "","content": "Hello MyPad!"}]';
+// main_data = '[{"edit_time": "2020.12.25 23:00","describe": "","content": "你好 MyPad!"}, {"edit_time": "2020.12.25 23:00","describe": "","content": "Hello MyPad!"}, {"edit_time": "2020.12.25 23:00","describe": "","content": "Hello MyPad!"}, {"edit_time": "2020.12.25 23:00","describe": "","content": "Hello MyPad!"}]';
 function read(task){
     // 本地读取模块
-    // fs.readFile("Save.txt", function(err, data){
-    //     if(err){
-    //         console.log(err);
-    //     }else{
-    //         data = String(data).replace(/^\s/g, '');
-    //         main_data = JSON.parse(data); eval(task);
-    //     }
-    // });
+    fs.readFile("Save.txt", function(err, data){
+        if(err){
+            console.log(err);
+        }else{
+            data = String(data).replace(/^\s/g, '');
+            main_data = JSON.parse(data); eval(task);
+        }
+    });
     // 网络读取模块
-    main_data = JSON.parse(main_data); eval(task);
+    // main_data = JSON.parse(main_data); eval(task);
 }
 function write(content){
     // 本地写入模块
-    // fs.writeFile("Save.txt", content, function(err){
-    //     if(err){
-    //         console.log(err);
-    //     }else return ;
-    // });
+    fs.writeFile("Save.txt", content, function(err){
+        if(err){
+            console.log(err);
+        }else return ;
+    });
 }
 function real_len(s){
     var len = s.length;
@@ -155,6 +155,7 @@ class EDITOR{
         elem.load(); list.save();
     }
     cancle(elem){
+        console.log("Cancle!");
         this.edit_box.val(elem.content);
         this.des_box.val(elem.describe);
         
@@ -165,14 +166,13 @@ class EDITOR{
         this.edit_box.val('');
         this.base.toggleClass("active");
 
-        this.save_btn.click(null);
-        this.cancle_btn.click(null);
+        this.save_btn.unbind("click")
+        this.cancle_btn.unbind("click");
     }
     edit(elem){
         if(this.on_edit)
             this.cancle(this.on_elem);
         this.on_elem = elem;
-        console.log(this.on_elem);
         this.on_edit = true;
         elem.on_edit = true;
         this.base.toggleClass("active");
@@ -182,10 +182,10 @@ class EDITOR{
 
         var th = this;
         this.save_btn.click(function(){
-            th.save(elem);
+            th.save(th.on_elem);
         });
         this.cancle_btn.click(function(){
-            th.cancle(elem);
+            th.cancle(th.on_elem);
         });
     }
 }
