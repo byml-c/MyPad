@@ -1,0 +1,18 @@
+{
+  "name": "mypad",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "packager": "electron-packager . 'MyPad' --platform=win32 --arch=x64 --icon=icon.ico --out=./out --asar --app-version=0.0.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^11.1.1",
+    "packager": "^0.1.9"
+  }
+}
