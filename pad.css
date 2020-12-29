@@ -8,6 +8,8 @@
     display: flex;
     flex-flow: row nowrap;
     font-family: "宋体", "楷体", "华文宋体";
+
+    transition-duration: 0.2s;
 }
 .dark.pad{
     background-color: rgb(165, 165, 165);
@@ -20,8 +22,11 @@
 
     display: flex;
     flex-flow: column nowrap;
+
+    overflow: auto;
 }
 .pad_box{
+    position: relative;
     margin: 5px 5px 5px 5px;
     
     border-radius: 3px;
@@ -29,6 +34,7 @@
     flex-flow: column nowrap;
     cursor: pointer;
 }
+
 .pad_add{
     min-height: 40px;
 
@@ -42,7 +48,7 @@
 }
 
 .pad_des{
-    margin: 3px 25px 3px 5px;
+    margin: 5px 25px 5px 8px;
 
     color:rgb(10, 10, 10);
     transition-duration: 0.2s;
@@ -51,7 +57,7 @@
 
 .pad_time{
     height: 20px;
-    margin: 0 0 2px 5px;
+    margin: 0 0 3px 8px;
 
     color: rgb(90, 90, 90);
 
@@ -63,12 +69,15 @@
 }
 .dark .pad_time{color: rgb(128, 128, 128);}
 
-.pad_box:hover .pad_des:before{
-
+.pad_remove{
+    position: absolute;
+    right: 5px; top: 5px;
 }
-.dark .pad_box:hover .pad_des:before{
-
+.pad_remove i{
+    font-size: 16px;
+    color:rgb(10, 10, 10);
 }
+.dark .pad_remove i{color:rgb(230, 230, 230);}
 
 /* 右侧编辑区样式 */
 .pad_editor{
@@ -96,6 +105,7 @@
 .pad_editor.active:after{display: none;}
 
 .editor_tools{
+    position: relative;
     margin: 5px 0 7px 0;
     min-height: 35px;
 
@@ -105,20 +115,21 @@
     flex-flow: row nowrap;
 }
 .pad_type{
-    min-height: 30px;
-    width: 80px;
-    margin: auto 0 auto 5px;
-    border-radius: 5px;
-
-    color: rgb(255, 255, 255);
-    background-color: rgb(14, 144, 210);
+    position: absolute;
+    width: 40px;
+    right: 5px; top: 0; bottom: 0;
+    
     cursor: pointer;
+    font-size: 20px;
+    color:rgb(10, 10, 10);
 
     display: flex;
     flex-flow: column nowrap;
     justify-content: center;
     text-align: center;
 }
+.dark .pad_type{color: rgb(255, 255, 255);}
+
 .editor_area{
     margin: 0 0 7px 0;
     flex-grow: 1;
@@ -178,6 +189,7 @@ textarea{
 }
 .dark textarea{color: rgb(230, 230, 230);}
 .pad_box_style{
+    transition-duration: 0.2s;
     background-color: rgb(245, 245, 245);
     box-shadow: rgba(51, 51, 51, 0.2) 1px 1.5px 1px;
 }
@@ -185,3 +197,12 @@ textarea{
     background-color: rgb(51, 51, 51);
     box-shadow: rgba(7, 7, 7, 0.2) 1px 1.5px 1px;
 }
+.pad_box_style.active{
+    box-shadow: rgb(14, 144, 210) 0px 0px 1px 1.5px;
+}
+.dark .pad_box_style.active{
+    box-shadow: rgb(31, 111, 235) 0px 0px 1px 2px;
+}
+.pad_btn{transition-duration: 0.2s;}
+.pad_btn:hover{background-color:rgb(206, 206, 206);}
+.dark .pad_btn:hover{background-color:rgb(110, 110, 110);}
