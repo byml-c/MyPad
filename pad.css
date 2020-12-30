@@ -1,3 +1,5 @@
+.pad *{margin: 0; padding: 0;}
+
 .pad{
     position: absolute;
     top: 0; bottom: 0;
@@ -48,6 +50,7 @@
 }
 
 .pad_des{
+    flex-grow: 1;
     margin: 5px 25px 5px 8px;
 
     color:rgb(10, 10, 10);
@@ -69,15 +72,35 @@
 }
 .dark .pad_time{color: rgb(128, 128, 128);}
 
-.pad_remove{
+.pad_icon{
+    opacity: 0;
+    width: 20px;
+    height: 20px;
     position: absolute;
-    right: 5px; top: 5px;
+    transition-duration: 0.3s;
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    text-align: center;
 }
-.pad_remove i{
+.pad_icon i{
     font-size: 16px;
     color:rgb(10, 10, 10);
 }
-.dark .pad_remove i{color:rgb(230, 230, 230);}
+.pad_copy{
+    bottom: 3px; right: 5px;
+}
+.pad_remove{
+    bottom: 3px; right: 25px;
+}
+.pad_remove i{font-size: 18px;}
+
+.pad_box:hover .pad_icon{opacity: 1;}
+.dark .pad_icon i{color:rgb(230, 230, 230);}
+
+.pad_box:hover{box-shadow: rgb(14, 144, 210) 0px 0px 1px 1.5px;}
+.dark .pad_box:hover{box-shadow: rgb(31, 111, 235) 0px 0px 1px 2px;}
 
 /* 右侧编辑区样式 */
 .pad_editor{
@@ -206,3 +229,9 @@ textarea{
 .pad_btn{transition-duration: 0.2s;}
 .pad_btn:hover{background-color:rgb(206, 206, 206);}
 .dark .pad_btn:hover{background-color:rgb(110, 110, 110);}
+
+.pad_clipboard{
+    position: absolute;
+    width: 1px; height: 1px;
+    opacity: 0; 
+}

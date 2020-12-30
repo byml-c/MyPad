@@ -93,10 +93,12 @@ class LIST_PAD{
         this.box = $('<div class="pad_box pad_box_style"></div>');
         this.des = $('<div class="pad_des"></div>');
         this.tim = $('<div class="pad_time"></div>');
-        this.remove_btn = $('<div class="pad_remove"></div>');
-        this.remove_btn.html('<i class="fa fa-times" aria-hidden="true"></i>');
+        this.remove_btn = $('<div class="pad_remove pad_icon"></div>');
+        this.remove_btn.html('<i class="fa fa-trash-o" aria-hidden="true"></i>');
+        this.copy_btn = $('<div class="pad_copy pad_icon"></div>');
+        this.copy_btn.html('<i class="fa fa-files-o" aria-hidden="true"></i>');
 
-        this.box.append(this.des, this.tim, this.remove_btn); this.load();
+        this.box.append(this.des, this.tim, this.remove_btn, this.copy_btn); this.load();
 
         var th = this;
         this.box.click(function(){
@@ -106,6 +108,9 @@ class LIST_PAD{
         this.remove_btn.click(function(){
             list.remove(th);
         });
+        this.copy_btn.click(function(){
+            th.copy();
+        })
     }
     load(){// 加载显示内容
         if(this.describe == ''){
@@ -115,6 +120,18 @@ class LIST_PAD{
             }else this.des.text(real_slice(this.content, 0, 12) + "...");
         }else this.des.text(this.describe);
         this.tim.text(this.edit_time);
+    }
+    copy(){
+        this.des.text('复制中...');
+        $('.pad_clipboard').val(this.content);
+        $('.pad_clipboard')[0].select();
+        document.execCommand("Copy");
+        this.des.text('已成功复制到剪贴板！');
+
+        var th = this;
+        setTimeout(() => {
+            th.load();
+        }, 500);
     }
 }
 class LIST{
