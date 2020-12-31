@@ -39,7 +39,7 @@ function read(task){
         });    
     }else{
         // 网络测试模块
-        main_data = '[{"edit_time": "2020.12.25 23:00","describe": "","content": "你好 MyPad!"}, {"edit_time": "2020.12.25 23:00","describe": "","content": "Hello MyPad!"}, {"edit_time": "2020.12.25 23:00","describe": "","content": "Hello MyPad!"}, {"edit_time": "2020.12.25 23:00","describe": "","content": "Hello MyPad!"}]';
+        main_data = '[{"edit_time": "2020.12.25 23:00", "content": "你好 MyPad!你好 MyPad!你好 MyPad!你好 MyPad!你好 MyPad!你好 MyPad!你好 MyPad!你好 MyPad!你好 MyPad!你好 MyPad!你好 MyPad!你好 MyPad!"}, {"edit_time": "2020.12.25 23:00","content": "Hello MyPad!"}, {"edit_time": "2020.12.25 23:00","content": "Hello MyPad!"}, {"edit_time": "2020.12.25 23:00","content": "Hello MyPad!"}]';
         main_data = JSON.parse(main_data); eval(task);
     }
 }
@@ -80,58 +80,77 @@ function get_now_time(){
 }
 
 class LIST_PAD{
-    constructor(father, idx, edit_time, describe, content){
+    constructor(father, idx, edit_time, content, fold){
         // 基本信息存储
         this.idx = idx;
         this.on_edit = false;
         this.edit_time = edit_time;
-        this.describe = describe;
         this.content = content;
         this.father = father;
+        this.on_fold = (fold == undefined)?1:parseInt(fold);
+        // 0 展开，1 是折叠
         
         // 基本结构定义
         this.box = $('<div class="pad_box pad_box_style"></div>');
+        this.tips = $('<div class="pad_tips"></div>');
         this.des = $('<div class="pad_des"></div>');
         this.tim = $('<div class="pad_time"></div>');
+        // 按钮定义
+        this.btn_box = $('<div class="pad_btn_box"></div>');
         this.remove_btn = $('<div class="pad_remove pad_icon"></div>');
         this.remove_btn.html('<i class="fa fa-trash-o" aria-hidden="true"></i>');
         this.copy_btn = $('<div class="pad_copy pad_icon"></div>');
         this.copy_btn.html('<i class="fa fa-files-o" aria-hidden="true"></i>');
+        this.fold_btn = $('<div class="pad_fold pad_icon"></div>');
+        this.edit_btn = $('<div class="pad_edit pad_icon"></div>');
+        this.edit_btn.html('<i class="fa fa-pencil-square-o" aria-hidden="true"></i>');
+        this.btn_box.append(this.remove_btn, this.edit_btn, this.copy_btn);
 
-        this.box.append(this.des, this.tim, this.remove_btn, this.copy_btn); this.load();
+        this.box.append(this.des, this.tim, this.btn_box, this.fold_btn, this.tips);
+        this.load();
 
         var th = this;
-        this.box.click(function(){
+        this.edit_btn.click(() => {
             if(th.on_edit) return ;
             editor.edit(th);
         });
-        this.remove_btn.click(function(){
-            list.remove(th);
-        });
-        this.copy_btn.click(function(){
-            th.copy();
-        })
+        this.remove_btn.click(() => {list.remove(th);});
+        this.copy_btn.click(() => {th.copy();});
+        this.fold_btn.click(() => {th.fold();})
     }
     load(){// 加载显示内容
-        if(this.describe == ''){
-            // 如果描述为空，自动取前 15 个字符作为简述
-            if(real_len(this.content) <= 15){
+        if(this.on_fold){
+            // 折叠情况下，取前 20 个字符作为简述
+            if(real_len(this.content) <= 23){
                 this.des.text(this.content);
-            }else this.des.text(real_slice(this.content, 0, 12) + "...");
-        }else this.des.text(this.describe);
-        this.tim.text(this.edit_time);
+            }else this.des.text(real_slice(this.content, 0, 20) + "...");
+            this.tim.text(this.edit_time);
+            this.fold_btn.html('<i class="fa fa-angle-double-down" aria-hidden="true"></i>');
+        }else{
+            // 展开情况
+            this.des.text(this.content);
+            this.tim.text(this.edit_time);
+            this.fold_btn.html('<i class="fa fa-angle-double-up" aria-hidden="true"></i>');
+        }
     }
     copy(){
-        this.des.text('复制中...');
         $('.pad_clipboard').val(this.content);
         $('.pad_clipboard')[0].select();
         document.execCommand("Copy");
-        this.des.text('已成功复制到剪贴板！');
+
+        this.tips.text("复制成功！");
+        this.tips.toggleClass("acitive");
 
         var th = this;
         setTimeout(() => {
+            th.tips.toggleClass("acitive");
             th.load();
-        }, 500);
+        }, 1500);
+    }
+    fold(){
+        this.on_fold = (this.on_fold+1)&1;
+        console.log(this.on_fold);
+        this.load(); list.save();
     }
 }
 class LIST{
@@ -142,7 +161,7 @@ class LIST{
 
         for(var i in main_data){
             var info = main_data[i];
-            var pad = new LIST_PAD(base, i, info['edit_time'], info['describe'], info['content']);
+            var pad = new LIST_PAD(base, i, info['edit_time'], info['content'], info['fold']);
             this.base.append(pad.box); this.pads.push(pad);
         } this.base.append(this.add_box); this.total = main_data.length;
         
@@ -155,8 +174,8 @@ class LIST{
             var item = this.pads[i];
             s.push({
                 "edit_time": item.edit_time,
-                "describe": item.describe,
-                "content": item.content
+                "content": item.content,
+                "fold": item.on_fold 
             });
         } write(JSON.stringify(s));
     }
@@ -182,7 +201,6 @@ class EDITOR{
         this.base = base;
         this.type = 0;
         this.content_save = '';
-        this.des_save = '';
 
         // 创建工具栏
         this.tools_box = $('<div class="editor_tools pad_box_style"></div>');
@@ -191,16 +209,14 @@ class EDITOR{
 
         // 创建文本编辑区域
         var edit_h = $('<div class="editor_h"></div>').text('笔记正文');
-        var des_h = $('<div class="editor_h"></div>').text('笔记描述');
         this.edit_box = $('<textarea class="editor_area pad_box_style"></textarea>');
-        this.des_box = $('<textarea class="editor_des pad_box_style"></textarea>');
         // 创建按钮区域
         this.btn_box = $('<div class="editor_btn"></div>');
         this.save_btn = $('<div class="editor_save"></div>').text("保存");
         this.cancle_btn = $('<div class="editor_cancle"></div>').text("关闭");
 
         this.btn_box.append(this.save_btn, this.cancle_btn);
-        this.base.append(this.tools_box, edit_h, this.edit_box, des_h, this.des_box, this.btn_box);
+        this.base.append(this.tools_box, edit_h, this.edit_box, this.btn_box);
         
         var th = this;
         this.type_btn.click(function(){
@@ -213,18 +229,15 @@ class EDITOR{
     }
     save(elem){
         elem.content = this.edit_box.val();
-        elem.describe = this.des_box.val();
         elem.edit_time = get_now_time();
         elem.load(); list.save();
     }
     cancle(elem){
         this.edit_box.val(elem.content);
-        this.des_box.val(elem.describe);
         
         elem.on_edit = false;
         this.on_edit = false;
 
-        this.des_box.val('');
         this.edit_box.val('');
         this.base.toggleClass("active");
         elem.box.toggleClass("active");
@@ -238,28 +251,18 @@ class EDITOR{
         this.on_elem = elem;
         this.on_edit = true;
         elem.on_edit = true;
-        this.des_save = elem.describe;
         this.content_save = elem.content;
         this.base.toggleClass("active");
         elem.box.toggleClass("active");
 
         this.edit_box.val(elem.content);
-        this.des_box.val(elem.describe);
 
         var th = this;
-        // this.des_box.live("input propertychange", function(){
-        //     th.save(th.on_elem);
-        // });
-        // this.edit_box.live("input propertychange", function(){
-        //     th.save(th.on_elem);
-        // });
 
         this.save_btn.click(function(){
             th.save(th.on_elem);
         });
         this.cancle_btn.click(function(){
-            // th.on_elem.content = th.content_save;
-            // th.on_elem.describe = th.des_save;
             list.save(); th.cancle(th.on_elem);
         });
     }
